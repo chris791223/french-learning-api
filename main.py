@@ -16,6 +16,7 @@ import logging
 from enum import Enum
 
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import anthropic
@@ -31,6 +32,22 @@ app = FastAPI(
     title="French Learning Material Generator",
     description="Generates grammar, reading, and vocabulary content for French learners.",
     version="1.0.0",
+)
+
+# Comma-separated list of allowed origins, e.g.
+# "http://localhost:4200,https://your-frontend.onrender.com"
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("ALLOWED_ORIGINS", "http://localhost:4200").split(",")
+    if origin.strip()
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
